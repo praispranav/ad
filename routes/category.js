@@ -8,6 +8,7 @@ let tifin = [];
 let newsPaper = [];
 let fruits = [];
 let vegetables = [];
+let dairy = []
 
 let a = 0;
 
@@ -31,14 +32,19 @@ router.get("/newspaper", function (req, res, next) {
   res.json(newsPaper);
 });
 
+router.get("/dairy", function (req, res, next) {
+  res.json(dairy);
+});
+
 router.get("/update", async function (req, res, next) {
   try {
     const products = await Products.find();
     flowers = products.filter((item)=> item.category == 'flowers')
-    newsPaper = products.filter((item)=> item.category == 'news-paper')
-    fruits = products.filter((item)=> item.category == 'fruit')
+    newsPaper = products.filter((item)=> item.category == 'newspaper')
+    fruits = products.filter((item)=> item.category == 'fruits')
     vegetables = products.filter((item)=> item.category == 'vegetables')
-    vegetables = products.filter((item)=> item.category == 'tifin')
+    tifin = products.filter((item)=> item.category == 'tifin')
+    dairy = products.filter((item)=> item.category == 'dairy')
     res.json({ status: "ok", msg: "Cached Updated" });
   } catch (error) {
     res.json({ status: 400, msg: "Something Went Wrong" });

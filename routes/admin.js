@@ -7,7 +7,7 @@ const auth = (token, next) => {
   else console.log("Unauthorised");
 };
 
-router.post("/flowers", async function (req, res, next) {
+router.post("/products", async function (req, res, next) {
   try {
     if (auth(req.body.token, next)) {
       const data = { ...req.body, token: undefined };
