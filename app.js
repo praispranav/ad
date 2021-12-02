@@ -31,7 +31,7 @@ app.set('view engine', 'jade');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 var corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: 'https://hris-admin.netlify.app/',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
