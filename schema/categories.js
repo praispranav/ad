@@ -8,14 +8,15 @@ const Products = new mongoose.Schema(
     },
     availableQuantity: { type: Array, required: true },
     initialQuantity: { type: Array, required: true },
-    price: { type: Number, required: true },
+    price: { type: String, required: true },
     priceUnit: { type: String, required: true },
     subscription: { type: String, required: false },
     category: {
       type: String,
       required: true,
     },
-    status:{type:String, required: false}
+    status: { type: String, required: false },
+    description: { type: String, required: false },
   },
   { collection: "products-details" }
 );
