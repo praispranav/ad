@@ -43,7 +43,9 @@ router.get("/image/:id", async (req, res) => {
     const result = await Image.find({ productId: id });
     res.status(200).json({ status: "ok", data: result });
     res.status;
-  } catch (err) {}
+  } catch (err) {
+    console.log(error)
+  }
 });
 
 router.get("/update", async function (req, res, next) {
