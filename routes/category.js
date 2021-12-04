@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const Products = require("../schema/categories");
-
+const Image = require('../schema/imageStore')
 
 let flowers = [];
 let tifin = [];
@@ -34,6 +34,16 @@ router.get("/newspaper", function (req, res, next) {
 
 router.get("/dairy", function (req, res, next) {
   res.json(dairy);
+});
+
+router.get("/image/:id", async (req, res) => {
+  try {
+    const id = req.params.id
+    console.log(req.params)
+    const result = await Image.find({ productId: id });
+    res.status(200).json({ status: "ok", data: result });
+    res.status;
+  } catch (err) {}
 });
 
 router.get("/update", async function (req, res, next) {
