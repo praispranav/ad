@@ -3,7 +3,6 @@ var router = express.Router();
 const Products = require("../schema/categories");
 const Image = require("../schema/imageStore");
 
-
 const auth = (token, next) => {
   if (token === "jasjkiwe47541weqe12wewq8ew51qe8qw7e") return true;
   else console.log("Unauthorised");
@@ -11,11 +10,15 @@ const auth = (token, next) => {
 
 const uploadImage = async (_id, imageString, category) => {
   try {
-    const data = { token: undefined, productId: _id, image: imageString, category:category };
+    const data = {
+      token: undefined,
+      productId: _id,
+      image: imageString,
+      category: category,
+    };
 
     await Image.create(data);
   } catch (err) {
-    console.log(err);
     res.json({ status: "error", message: "Something Went Wrong" });
   }
 };
@@ -31,10 +34,9 @@ router.post("/products", async function (req, res, next) {
       }
       res.status(201).json({ status: "ok", message: "Created" + id._id });
     } else {
-      res.status(401).json({ status: "Unauthorised" });
+      res.status(401).json({ message: "Unauthorised" });
     }
   } catch (err) {
-    console.log(err);
     res.status(500).json({ status: "error", message: "Something Went Wrong" });
   }
 });
@@ -47,10 +49,82 @@ router.get("/products", async (req, res) => {
   } catch (err) {}
 });
 
+router.post("/products/edit/:id", async (req, res) => {
+  try {
+    const token = req.body.token;
+    if (auth(token)) {
+      const id = req.params.id;
+      const clone = { ...req.body };
+      const result = await Products.findOneAndUpdate({ _id: id }, clone);
+      res.status(200).json({
+        status: 200,
+        message: `Product Updated:- ${result.name}`,
+      });
+    } else {
+      res.status(401).json({ message: "UnAuthorised" });
+    }
+  } catch (error) {
+    res.status(500).json({ data: [] });
+  }
+});
 
+router.post("/products/delete/:id", async (req, res) => {
+  try {
+    const token = req.body.token;
+    if (auth(token)) {
+      const id = req.params.id;
+      const result = await Products.deleteOne({ _id: id });
 
-// router.post("/products", async function (req, res, next) {
+      res.status(200).json({
+        status: 200,
+        message: `Product Deleted:- ${result.name}`,
+      });
+    } else {
+      res.status(401).json({ message: "UnAuthorised" });
+    }
+  } catch (error) {
+    res.status(500).json({ data: [] });
+  }
+});
 
-// });
+router.post("/products/status/:id", async (req, res) => {
+  try {
+    const token = req.body.token;
+    if (auth(token)) {
+      const id = req.params.id;
+      const newStatus = req.body.status;
+      const clone = { status: newStatus };
+      const result = await Products.findOneAndUpdate({ _id: id }, clone);
+      res.status(200).json({
+        status: 200,
+        message: `Status Updated:- ${result.name}`,
+      });
+    } else {
+      res.status(401).json({ message: "UnAuthorised" });
+    }
+  } catch (error) {
+    res.status(500).json({ data: [] });
+  }
+});
+
+router.post("/products/qty/:id", async (req, res) => {
+  try {
+    const token = req.body.token;
+    if (auth(token)) {
+      const id = req.params.id;
+      const newQty = req.body.qty;
+      const clone = { availableQuantity: newQty };
+      const result = await Products.findOneAndUpdate({ _id: id }, clone);
+      res.status(200).json({
+        status: 200,
+        message: `Quantity Updated:- ${result.name}`,
+      });
+    } else {
+      res.status(401).json({ message: "UnAuthorised" });
+    }
+  } catch (error) {
+    res.status(500).json({ data: [] });
+  }
+});
 
 module.exports = router;
