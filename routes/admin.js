@@ -2,7 +2,6 @@ var express = require("express");
 var router = express.Router();
 const Products = require("../schema/categories");
 const Image = require("../schema/imageStore");
-// const limit = require('express-limit').limit;
 
 
 const auth = (token, next) => {
@@ -26,10 +25,10 @@ router.post("/products", async function (req, res, next) {
     if (auth(req.body.token, next)) {
       const data = { ...req.body, token: undefined };
 
-      const id = await Products.create(data); 
-      // if (id._id) {
-      //   uploadImage(id._id, data.image);
-      // }
+      const id = await Products.create(data);
+      if (id._id) {
+        uploadImage(id._id, data.image);
+      }
       res.status(201).json({ status: "ok", message: "Created" + id._id });
     } else {
       res.status(401).json({ status: "Unauthorised" });
