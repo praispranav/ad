@@ -9,9 +9,9 @@ const auth = (token, next) => {
   else console.log("Unauthorised");
 };
 
-const uploadImage = async (_id, imageString) => {
+const uploadImage = async (_id, imageString, category) => {
   try {
-    const data = { token: undefined, productId: _id, image: imageString };
+    const data = { token: undefined, productId: _id, image: imageString, category:category };
 
     await Image.create(data);
   } catch (err) {
@@ -27,7 +27,7 @@ router.post("/products", async function (req, res, next) {
 
       const id = await Products.create(data);
       if (id._id) {
-        uploadImage(id._id, data.image);
+        uploadImage(id._id, data.image, data.category);
       }
       res.status(201).json({ status: "ok", message: "Created" + id._id });
     } else {
