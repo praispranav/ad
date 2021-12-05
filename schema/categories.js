@@ -17,6 +17,7 @@ const Products = new mongoose.Schema(
     },
     status: { type: String, required: false },
     description: { type: String, required: false },
+    image:{type:String, required: false}
   },
   { collection: "products-details" }
 );
