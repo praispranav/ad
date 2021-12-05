@@ -31,16 +31,25 @@ app.set('view engine', 'jade');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 var corsOptions = {
-  origin: 'https://hris-admin.netlify.app/',
+  origin:'*',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
+// app.use(express.limit(1000000000000));
+// app.use(express.limit('2mb'));
+
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit:"5mb"}));
+app.use(bodyParser.urlencoded({ limit: '5mb',extended: true }));
 app.use(cookieParser());
-app.use(cors())
-app.options('*', cors());
+// app.use(cors())
+// app.options('*', cors(corsOptions));
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.use('/', routes);
 app.use('/category', category);

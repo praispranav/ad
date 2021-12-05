@@ -2,6 +2,8 @@ var express = require("express");
 var router = express.Router();
 const Products = require("../schema/categories");
 const Image = require("../schema/imageStore");
+// const limit = require('express-limit').limit;
+
 
 const auth = (token, next) => {
   if (token === "jasjkiwe47541weqe12wewq8ew51qe8qw7e") return true;

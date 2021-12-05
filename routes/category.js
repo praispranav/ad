@@ -1,7 +1,8 @@
 var express = require("express");
 var router = express.Router();
 const Products = require("../schema/categories");
-const Image = require('../schema/imageStore')
+const Image = require('../schema/imageStore');
+var mongoose =  require('mongoose')
 
 let flowers = [];
 let tifin = [];
