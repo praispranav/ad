@@ -54,7 +54,7 @@ router.post("/products/edit/:id", async (req, res) => {
     const token = req.body.token;
     if (auth(token)) {
       const id = req.params.id;
-      const clone = { ...req.body };
+      const clone = { ...req.body, token: undefined, _id: undefined };
       const result = await Products.findOneAndUpdate({ _id: id }, clone);
       res.status(200).json({
         status: 200,
@@ -77,7 +77,7 @@ router.post("/products/delete/:id", async (req, res) => {
 
       res.status(200).json({
         status: 200,
-        message: `Product Deleted:- ${result.name}`,
+        message: `Product Deleted`,
       });
     } else {
       res.status(401).json({ message: "UnAuthorised" });
@@ -112,7 +112,7 @@ router.post("/products/qty/:id", async (req, res) => {
     const token = req.body.token;
     if (auth(token)) {
       const id = req.params.id;
-      const newQty = req.body.qty;
+      const newQty = req.body.availableQuantity;
       const clone = { availableQuantity: newQty };
       const result = await Products.findOneAndUpdate({ _id: id }, clone);
       res.status(200).json({
