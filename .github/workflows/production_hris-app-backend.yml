@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'hris-app-backend'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_40417FAD516E404CA8682D54EF3F3755 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9962E6051FBC418E88414E334A61B2B5 }}
           package: .
