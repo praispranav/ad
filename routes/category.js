@@ -37,11 +37,11 @@ router.get("/dairy", function (req, res, next) {
   res.json(dairy);
 });
 
-router.get("/image/:id", async (req, res) => {
+router.get("/image/:category", async (req, res) => {
   try {
-    const id = req.params.id
+    const category = req.params.category
     console.log(req.params)
-    const result = await Image.find({ productId: id });
+    const result = await Image.find({ category: category });
     res.status(200).json({ status: "ok", data: result });
     res.status;
   } catch (err) {
