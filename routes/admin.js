@@ -117,6 +117,26 @@ router.post("/products/qty/:id", async (req, res) => {
       const result = await Products.findOneAndUpdate({ _id: id }, clone);
       res.status(200).json({
         status: 200,
+        message: `Discount Updated:- ${result.name}`,
+      });
+    } else {
+      res.status(401).json({ message: "UnAuthorised" });
+    }
+  } catch (error) {
+    res.status(500).json({ data: [] });
+  }
+});
+
+router.post("/products/discount/:id", async (req, res) => {
+  try {
+    const token = req.body.token;
+    if (auth(token)) {
+      const id = req.params.id;
+      const newQty = req.body.discount;
+      const clone = { discount: newQty };
+      const result = await Products.findOneAndUpdate({ _id: id }, clone);
+      res.status(200).json({
+        status: 200,
         message: `Quantity Updated:- ${result.name}`,
       });
     } else {

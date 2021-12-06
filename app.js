@@ -53,7 +53,7 @@ app.use(function (req, res, next) {
 
 app.use('/', routes);
 app.use('/category', category);
-app.use('/users', users);
+app.use('/user', users);
 app.use('/admin', admin);
 
 // catch 404 and forward to error handler
