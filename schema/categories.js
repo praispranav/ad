@@ -11,6 +11,7 @@ const Products = new mongoose.Schema(
     price: { type: String, required: true },
     priceUnit: { type: String, required: true },
     subscription: { type: String, required: false },
+    discount:{type:Number, required: false},
     category: {
       type: String,
       required: true,
