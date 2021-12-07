@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema(
     phone: { type: String, required: true },
     password: { type: String, required: true },
     forgetPasswordOtp: { type: Number, required: false, max: 999999 },
+    forgetPasswordTime:{ type:Date, required: false}
   },
   { collection: "user" }
 );
