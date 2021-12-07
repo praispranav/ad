@@ -7,9 +7,11 @@ const nodemailer = require("nodemailer");
 const User = require("../schema/user");
 const Address = require("../schema/address");
 
+const config = require('../config/keys')
+
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
-const privateKey = "s0//P4$$w0rDjkjjhuyufvvgjh";
+const saltRounds = config.saltRounds;
+const privateKey = config.privateKey;
 
 const generateToken = (data) => {
   return new Promise(async (resolve, rejects) => {
@@ -48,8 +50,8 @@ const sendMail = async ({ email, otp }) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "servicehris@gmail.com",
-        pass: "Pushpalata@78", // naturally, replace both with your real credentials or an application-specific password
+        user: config.mailUserName,
+        pass: config.mailPassword, // naturally, replace both with your real credentials or an application-specific password
       },
     });
     const mailOptions = {

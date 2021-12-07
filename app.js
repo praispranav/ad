@@ -9,6 +9,7 @@ var cors =  require('cors')
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var admin = require('./routes/admin')
+const order= require('./routes/order')
 
 const mongoose =  require('mongoose')
 
@@ -55,6 +56,7 @@ app.use('/', routes);
 app.use('/category', category);
 app.use('/user', users);
 app.use('/admin', admin);
+app.use('/order',order)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
