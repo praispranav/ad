@@ -73,8 +73,20 @@ const sendMail = async ({ email, otp }) => {
 };
 
 /* GET users listing. */
-router.get("/", function (req, res, next) {
-  res.send("respond with a resource");
+router.post("/", async function (req, res, next) {
+  const { token } = req.body;
+  try {
+    const user = await tokenVerify(token);
+    if (user.data._id) {
+      const result = await User.findOne({ _id: user.data._id})
+      res.json(result)
+    } else {
+
+      res.status(401).json({ message: "Invalid User" })
+    }
+  } catch(error){
+    res.status(500).json({ message: "Something Went Wrong"})
+  }
 });
 
 router.post("/auth/login", async (req, res) => {
