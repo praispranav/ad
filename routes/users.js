@@ -7,7 +7,7 @@ const nodemailer = require("nodemailer");
 const User = require("../schema/user");
 const Address = require("../schema/address");
 
-const config = require('../config/keys')
+const config = require("../config/keys");
 
 const bcrypt = require("bcrypt");
 const saltRounds = config.saltRounds;
@@ -78,14 +78,13 @@ router.post("/", async function (req, res, next) {
   try {
     const user = await tokenVerify(token);
     if (user.data._id) {
-      const result = await User.findOne({ _id: user.data._id})
-      res.json(result)
+      const result = await User.findOne({ _id: user.data._id });
+      res.json(result);
     } else {
-
-      res.status(401).json({ message: "Invalid User" })
+      res.status(401).json({ message: "Invalid User" });
     }
-  } catch(error){
-    res.status(500).json({ message: "Something Went Wrong"})
+  } catch (error) {
+    res.status(500).json({ message: "Something Went Wrong" });
   }
 });
 
@@ -98,20 +97,31 @@ router.post("/auth/login", async (req, res) => {
     if (phone) check = { phone: phone };
     const findUser = await User.findOne({ ...check });
     if (findUser) {
-      bcrypt.compare(password, findUser.password, async function (err, result) {
-        if (result) {
-          const token = await generateToken({
-            _id: findUser._id,
-            email: findUser.email,
-            phone: findUser.phone,
-          });
-          res.status(200).json({
-            message: `Hey ${findUser.name}`,
-            token: token,
-          });
-        }
-        if (err) res.status(401).json({ message: "Login Failed" });
-      });
+      try{
+        await bcrypt.compare(password, findUser.password, async function (err, result) {
+          try {
+            if (result) {
+              const token = await generateToken({
+                _id: findUser._id,
+                email: findUser.email,
+                phone: findUser.phone,
+              });
+              res.status(200).json({
+                message: `Hey ${findUser.name}`,
+                token: token,
+              });
+            } else {
+              res.status(200).json({ message: "Login Failed" });
+            }
+          } catch (error) {
+            res.status(401).json({ message: "Email Or Password Wrong." });
+          }
+          if (err) res.status(200).json({ message: "Login Failed" });
+        });
+
+      } catch(e){
+        res.json({message: "Something Went Wrong."})
+      }
     } else {
       res.json({ message: "Invalid User/ User Does Not Exists " });
     }
@@ -273,13 +283,7 @@ router.post("/address/add", async (req, res) => {
     state,
     phone,
   }) => {
-    console.log(address1,
-      address2,
-      city,
-      userId,
-      pinCode,
-      state,
-      phone,)
+    console.log(address1, address2, city, userId, pinCode, state, phone);
     try {
       await Address.create({
         address1: address1,
@@ -292,14 +296,14 @@ router.post("/address/add", async (req, res) => {
       });
       res.json({ message: "Address Added" });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       res.json({ message: "Address not Added Please Check Your Fields" });
     }
   };
   const { address1, address2, city, state, phone, pinCode, token } = req.body;
   try {
     const userId = await tokenVerify(token);
-    console.log(userId)
+    console.log(userId);
     addAddress({
       address1,
       address2,
@@ -310,7 +314,7 @@ router.post("/address/add", async (req, res) => {
       userId: userId.data._id,
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({ message: "Invalid Token" });
   }
 });
@@ -359,14 +363,12 @@ router.post("/address/edit/:id", async (req, res) => {
           pinCode: pinCode,
         }
       );
-      if(result){
-        res.json({ message: "Address Updated"})
-
-      } else{
+      if (result) {
+        res.json({ message: "Address Updated" });
+      } else {
         res.json({ message: "Address Not Updated" });
-
       }
-      console.log(result)
+      console.log(result);
     } else {
       res.json({ message: "Invalid Token" });
     }
