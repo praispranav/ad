@@ -42,6 +42,7 @@ router.post("/cart/get", async (req, res) => {
       const cartWithProduct = result.map((item)=>{
         const product = productById[item.productId]
         const obj = { 
+          productId: product._id,
           userId:item.userId,
           selectedQuantity: item.selectedQuantity, 
           name: product.name,

@@ -51,7 +51,7 @@ router.get("/image/:category", async (req, res) => {
 
 router.get("/image/id/:id", async (req, res) => {
   try {
-    const productId = req.params.productId;
+    const productId = req.params.id;
     console.log(req.params);
     const result = await Image.find({ productId: productId });
     res.status(200).json(result);
