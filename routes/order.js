@@ -60,7 +60,7 @@ router.post("/cart/get", async (req, res) => {
         return obj
       })
       let totalPrice = 0
-      cartWithProduct.forEEach((item)=>{
+      cartWithProduct.forEach((item)=>{
         const localTotalPrice = item.price * item.selectedQuantity
         totalPrice += localTotalPrice 
       })
@@ -70,6 +70,7 @@ router.post("/cart/get", async (req, res) => {
         res.json({ message: "Cart Empty" });
     }
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: "Unauthorised User" });
   }
 });
