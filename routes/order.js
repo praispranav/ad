@@ -5,6 +5,7 @@ const config = require("../config/keys");
 const Product = require("../schema/categories");
 const jwt = require('jsonwebtoken')
 const privateKey = config.privateKey;
+var mongoose = require('mongoose')
 
 const tokenVerify = (token) => {
   return new Promise((resolve, rejects) => {
@@ -30,15 +31,36 @@ router.post("/cart/get", async (req, res) => {
       });
       const productIds = new Array();
       result.forEach((item)=>{
-        productIds.push(item.productId)
+        productIds.push(mongoose.Types.ObjectId(item.productId))
       })
-      const findPerformances = await Product.find({
+      const getRequiredProducts = await Product.find({
         _id: { $in: productIds },
       });
+      const productById = new Array();
+      getRequiredProducts.forEach((item)=> productById[item._id] = item)
 
-      res.status(200).json(findPerformances);
+      const cartWithProduct = result.map((item)=>{
+        const product = productById[item.productId]
+        const obj = { 
+          userId:item.userId,
+          selectedQuantity: item.selectedQuantity, 
+          name: product.name,
+          availableQuantity: product.availableQuantity,
+          initialQuantity: product.initialQuantity,
+          price: product.price,
+          priceUnit: product.priceUnit,
+          subscription: product.subscription,
+          discount: product.discount,
+          category: product.category,
+          status: product.status,
+          description: product.description
+        } 
+        return obj
+      })
+
+      res.status(200).json(cartWithProduct);
     } else {
-        res.json({ message: "Item Cannot be Added" });
+        res.json({ message: "Cart Empty" });
     }
   } catch (error) {
     res.status(500).json({ message: "Unauthorised User" });

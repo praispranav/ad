@@ -79,6 +79,10 @@ router.post("/", async function (req, res, next) {
     const user = await tokenVerify(token);
     if (user.data._id) {
       const result = await User.findOne({ _id: user.data._id });
+      const clone = { ...result }
+      clone.password = undefined;
+      clone.forgetPasswordOtp = undefined;
+      clone.forgetPasswordTime = undefined;
       res.json(result);
     } else {
       res.status(401).json({ message: "Invalid User" });
@@ -250,7 +254,7 @@ router.post("/auth/change-password", async (req, res) => {
         bcrypt.hash(newpassword, salt, async function (err, hash) {
           try {
             const clone = { password: hash };
-            await User.findOneAndUpdate({ _id: tokenUser._id }, clone);
+            await User.findOneAndUpdate({ _id: tokenUser.data._id }, clone);
             res.json({
               message: "Password Updated",
             });
