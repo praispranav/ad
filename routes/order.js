@@ -42,6 +42,7 @@ router.post("/cart/get", async (req, res) => {
       const cartWithProduct = result.map((item)=>{
         const product = productById[item.productId]
         const obj = { 
+          _id: item._id,
           productId: product._id,
           userId:item.userId,
           selectedQuantity: item.selectedQuantity, 
@@ -89,12 +90,12 @@ router.post("/cart/add", async (req, res) => {
 });
 
 router.post("/cart/edit/", async (req, res) => {
-  const { token, productId, selectedQuantity, _id } = req.body;
+  const { token, selectedQuantity, _id } = req.body;
   try {
     const user = await tokenVerify(token);
     if (user.data._id) {
       await Cart.findOneAndUpdate(
-        { userId: user.data._id, _id: _id },
+        { _id: _id },
         {
           selectedQuantity: selectedQuantity,
         }
