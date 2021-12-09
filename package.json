@@ -7,7 +7,7 @@
     "node": ">=14.17.0"
   },
   "scripts": {
-    "start": "nodemon node ./bin/www"
+    "start": "node ./bin/www"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
