@@ -12,10 +12,10 @@ const Orders = new mongoose.Schema(
     createdDate: { type: Date, required: true },
     addressId: { type: String, required: true },
     address1: { type: String, required: true },
-    address2: { type: String, required: true },
+    address2: { type: String, required: false },
     pinCode: { type: String, required: true },
     phone: { type: String, required: true },
-    paymentMode: { type: String, required: true },
+    paymentMode: { type: Object, required: true },
   },
   { collection: "normal-order" }
 );

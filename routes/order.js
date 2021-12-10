@@ -133,23 +133,49 @@ router.post("/cart/delete", async (req, res) => {
 var NormalOrder = require("../schema/normalOrders");
 
 router.post("/add", async (req, res) => {
-  const { token, orders: originalOrders } = req.body;
-  try {
+  const { token, paymentMode, address, products,  } = req.body;
+  try { 
     const user = await tokenVerify(token);
-    const userId = user.date._id;
-    const orders = originalOrders.map((item) => {
-      item.userId = userId;
-      item.status = "Processing";
-      item.createdDate = new Date();
-      return item;
-    });
-    const result = await NormalOrder.insertMany([...orders]);
-    if (result) {
-    } else {
-      res.status(400).json({ message: "Order Failed" });
-    }
+    const newList = new Array();
+    products.forEach((item)=>{
+      const obj = new Object();
+
+      obj.userId = user.data._id;
+      obj.status = 'Processing';
+      obj.createdDate = new Date();
+      obj.productId = item._id;
+      obj.name = item.name;
+      obj.price = item.price;
+      obj.priceUnit = item.priceUnit;
+      obj.selectedQuantity = item.selectedQuantity
+      obj.addressId = address._id;
+      obj.address1 = address.address1
+      obj.address2 = address.address2
+      obj.pinCode = address.pinCode
+      obj.phone = address.phone
+      obj.paymentMode = paymentMode.paymentMode
+      newList.push(obj)
+      //   item.status = "Processing";
+      //   item.createdDate = new Date();
+      //   return item;
+    })
+    // const userId = user.date._id;
+    // const orders = originalOrders.map((item) => {
+    //   item.userId = userId;
+    //   item.status = "Processing";
+    //   item.createdDate = new Date();
+    //   return item;
+    // });
+    await NormalOrder.insertMany(newList);
+    await Cart.deleteMany({ userId: user.data._id})
+    // if (result) {
+    // } else {
+    //   res.status(400).json({ message: "Order Failed" });
+    // }
+    res.json(newList)
   } catch (error) {
-    res.status(500).json({ message: "Unauthorised User" });
+    console.log(error)
+    res.status(500).json({ message: "Something Went Wrong" });
   }
 });
 
