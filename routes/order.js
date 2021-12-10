@@ -61,7 +61,8 @@ router.post("/cart/get", async (req, res) => {
       });
       let totalPrice = 0;
       cartWithProduct.forEach((item) => {
-        const localTotalPrice = item.price * item.selectedQuantity;
+        const price = item.price - ( (item.price /100)/100 * item.discount)
+        const localTotalPrice = price * item.selectedQuantity;
         totalPrice += localTotalPrice;
       });
 
