@@ -181,20 +181,24 @@ router.post("/auth/register", async (req, res) => {
 });
 
 router.post("/auth/otpverify", async (req, res) => {
-  const { otp, email, phone } = req.body;
+  const { otp, email, phone: originalPhone } = req.body;
   let check;
   if (email) check = { email: email };
-  if (phone) phone = { phone: phone };
+  if (originalPhone) phone = { phone: originalPhone };
 
   const findUser = await User.findOne({ ...check });
+  console.log(findUser)
+
   try {
     if (findUser) {
-      if (Number(otp) === Number(findUser.forgetPasswordOtp)) {
+      console.log(otp, findUser.forgetPasswordOtp )
+      if (otp == findUser.forgetPasswordOtp) {
         const newToken = await generateToken({
           _id: findUser._id,
           email: findUser.email,
           phone: findUser.phone,
         });
+        console.log(newToken)
         await User.findOneAndUpdate(
           { _id: findUser._id },
           { forgetPasswordOtp: null, forgetPasswordTime: null }
@@ -204,7 +208,7 @@ router.post("/auth/otpverify", async (req, res) => {
           token: newToken,
         });
       } else {
-        res.json({ message: "Wrong Otp" });
+        res.status(201).json({ message: "Wrong Otp" });
       }
     }
   } catch (error) {
@@ -213,10 +217,10 @@ router.post("/auth/otpverify", async (req, res) => {
 });
 
 router.post("/auth/reqforotp", async (req, res) => {
-  const { email, phone } = req.body;
+  const { email, phone:originalPhone } = req.body;
   let check;
   if (email) check = { email: email };
-  if (phone) phone = { phone: phone };
+  if (originalPhone) phone = { phone: originalPhone };
 
   const findUser = await User.findOne({ ...check });
   const randomNumber = await Math.floor(Math.random() * 100000);
