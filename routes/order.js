@@ -61,7 +61,7 @@ router.post("/cart/get", async (req, res) => {
       });
       let totalPrice = 0;
       cartWithProduct.forEach((item) => {
-        const price = item.price - ((item.price / 100) * item.discount);
+        const price = item.price - (item.price / 100) * item.discount;
         const localTotalPrice = price * item.selectedQuantity;
         totalPrice += localTotalPrice;
       });
@@ -138,7 +138,7 @@ router.post("/add", async (req, res) => {
     const user = await tokenVerify(token);
     const newList = new Array();
     const dis = (item.price / 100) * item.discount;
-        const discountedPrice = item.price - dis;
+    const discountedPrice = item.price - dis;
     products.forEach((item) => {
       const obj = new Object();
       obj.userId = user.data._id;
@@ -146,7 +146,7 @@ router.post("/add", async (req, res) => {
       obj.createdDate = new Date();
       obj.productId = item._id;
       obj.name = item.name;
-      obj.price = item.discountedPrice;
+      obj.price = discountedPrice;
       obj.priceUnit = item.priceUnit;
       obj.selectedQuantity = item.selectedQuantity;
       obj.addressId = address._id;
@@ -171,10 +171,7 @@ router.post("/cancel", async (req, res) => {
   const user = await tokenVerify(token);
   try {
     if (user.data._id) {
-     await NormalOrder.findByIdAndUpdate(
-        { _id: id },
-        { status: "Cancelled" }
-      );
+      await NormalOrder.findByIdAndUpdate({ _id: id }, { status: "Cancelled" });
       res.status(200).json({ message: "Order Cancelled Successfully" });
     } else {
       res.status(401).json({ message: "Unauthorised User" });
