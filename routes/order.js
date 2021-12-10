@@ -61,7 +61,7 @@ router.post("/cart/get", async (req, res) => {
       });
       let totalPrice = 0;
       cartWithProduct.forEach((item) => {
-        const price = item.price - ( (item.price /100)/100 * item.discount)
+        const price = item.price - ((item.price / 100) * item.discount);
         const localTotalPrice = price * item.selectedQuantity;
         totalPrice += localTotalPrice;
       });
@@ -133,49 +133,67 @@ router.post("/cart/delete", async (req, res) => {
 var NormalOrder = require("../schema/normalOrders");
 
 router.post("/add", async (req, res) => {
-  const { token, paymentMode, address, products,  } = req.body;
-  try { 
+  const { token, paymentMode, address, products } = req.body;
+  try {
     const user = await tokenVerify(token);
     const newList = new Array();
-    products.forEach((item)=>{
+    products.forEach((item) => {
       const obj = new Object();
-
       obj.userId = user.data._id;
-      obj.status = 'Processing';
+      obj.status = "Processing";
       obj.createdDate = new Date();
       obj.productId = item._id;
       obj.name = item.name;
       obj.price = item.price;
       obj.priceUnit = item.priceUnit;
-      obj.selectedQuantity = item.selectedQuantity
+      obj.selectedQuantity = item.selectedQuantity;
       obj.addressId = address._id;
-      obj.address1 = address.address1
-      obj.address2 = address.address2
-      obj.pinCode = address.pinCode
-      obj.phone = address.phone
-      obj.paymentMode = paymentMode.paymentMode
-      newList.push(obj)
-      //   item.status = "Processing";
-      //   item.createdDate = new Date();
-      //   return item;
-    })
-    // const userId = user.date._id;
-    // const orders = originalOrders.map((item) => {
-    //   item.userId = userId;
-    //   item.status = "Processing";
-    //   item.createdDate = new Date();
-    //   return item;
-    // });
+      obj.address1 = address.address1;
+      obj.address2 = address.address2;
+      obj.pinCode = address.pinCode;
+      obj.phone = address.phone;
+      obj.paymentMode = paymentMode.paymentMode;
+      newList.push(obj);
+    });
     await NormalOrder.insertMany(newList);
-    await Cart.deleteMany({ userId: user.data._id})
-    // if (result) {
-    // } else {
-    //   res.status(400).json({ message: "Order Failed" });
-    // }
-    res.json(newList)
+    await Cart.deleteMany({ userId: user.data._id });
+    res.json(newList);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({ message: "Something Went Wrong" });
+  }
+});
+
+router.post("/cancel", async (req, res) => {
+  const { id, token } = req.body;
+  const user = await tokenVerify(token);
+  try {
+    if (user.data._id) {
+     await NormalOrder.findByIdAndUpdate(
+        { _id: id },
+        { status: "Cancelled" }
+      );
+      res.status(200).json({ message: "Order Cancelled Successfully" });
+    } else {
+      res.status(401).json({ message: "Unauthorised User" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Something Went Wrong" });
+  }
+});
+
+router.post("/get", async (req, res) => {
+  try {
+    const { token } = req.body;
+    const { data } = await tokenVerify(token);
+    if (data._id) {
+      const result = await NormalOrder.find({ userId: data._id });
+      res.json(result);
+    } else {
+      res.json({ message: "Uauthorised user" });
+    }
+  } catch (error) {
+    res.json({ message: "Something Went Wrong" });
   }
 });
 
