@@ -137,6 +137,8 @@ router.post("/add", async (req, res) => {
   try {
     const user = await tokenVerify(token);
     const newList = new Array();
+    const dis = (item.price / 100) * item.discount;
+        const discountedPrice = item.price - dis;
     products.forEach((item) => {
       const obj = new Object();
       obj.userId = user.data._id;
@@ -144,7 +146,7 @@ router.post("/add", async (req, res) => {
       obj.createdDate = new Date();
       obj.productId = item._id;
       obj.name = item.name;
-      obj.price = item.price;
+      obj.price = item.discountedPrice;
       obj.priceUnit = item.priceUnit;
       obj.selectedQuantity = item.selectedQuantity;
       obj.addressId = address._id;
