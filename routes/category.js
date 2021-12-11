@@ -36,6 +36,18 @@ router.get("/newspaper", function (req, res, next) {
 router.get("/dairy", function (req, res, next) {
   res.json(dairy);
 });
+router.get("/time-range", function (req, res, next) {
+  const timeRange = [
+    "8pm - 9pm",
+    "7pm - 8pm",
+    "6pm - 7pm",
+    "5pm - 6pm",
+    "6am - 7am",
+    "7am - 8am",
+    "8am - 9am",
+  ];
+  res.json(timeRange)
+});
 
 router.get("/image/:category", async (req, res) => {
   try {

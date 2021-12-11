@@ -6,6 +6,7 @@ const Product = require("../schema/categories");
 const jwt = require("jsonwebtoken");
 const privateKey = config.privateKey;
 var mongoose = require("mongoose");
+const Subscriptions = require("../schema/subscriptions");
 
 const tokenVerify = (token) => {
   return new Promise((resolve, rejects) => {
@@ -29,7 +30,7 @@ router.post("/cart/get", async (req, res) => {
       const result = await Cart.find({
         userId: user.data._id,
       });
-      console.log(result)
+      console.log(result);
       const productIds = new Array();
       result.forEach((item) => {
         productIds.push(mongoose.Types.ObjectId(item.productId));
@@ -62,7 +63,9 @@ router.post("/cart/get", async (req, res) => {
       });
       let totalPrice = 0;
       cartWithProduct.forEach((item) => {
-        const price = item.price - (item.price / 100) * item.discount;
+        const price =
+          item.price -
+          (item.price / 100) * (item.discount > 0 ? item.discount : 0);
         const localTotalPrice = price * item.selectedQuantity;
         totalPrice += localTotalPrice;
       });
@@ -132,37 +135,220 @@ router.post("/cart/delete", async (req, res) => {
   }
 });
 var NormalOrder = require("../schema/normalOrders");
+const subscriptions = require("../schema/subscriptions");
 
 router.post("/add", async (req, res) => {
   const { token, paymentMode, address, products } = req.body;
   try {
     const user = await tokenVerify(token);
     const newList = new Array();
-    products.forEach((item) => {
-      const dis = (item.price / 100) * item.discount;
-      const discountedPrice = item.price - dis;
-      const obj = new Object();
-      obj.userId = user.data._id;
-      obj.status = "Processing";
-      obj.createdDate = new Date();
-      obj.productId = item.productId;
-      obj.name = item.name;
-      obj.price = discountedPrice;
-      obj.priceUnit = item.priceUnit;
-      obj.selectedQuantity = item.selectedQuantity;
-      obj.addressId = address._id;
-      obj.address1 = address.address1;
-      obj.address2 = address.address2;
-      obj.pinCode = address.pinCode;
-      obj.phone = address.phone;
-      obj.paymentMode = paymentMode.paymentMode;
-      newList.push(obj);
-    });
+    console.log("Original", products);
+    console.log(
+      "Filtered",
+      products.filter((item) => item.subscription == 0)
+    );
+
+    products
+      .filter((item) => item.subscription == 0)
+      .forEach((item) => {
+        const dis = (item.price / 100) * (item.discount ? item.discount : 0);
+        const discountedPrice = item.price - dis;
+        if (item.subscription == 0) {
+          const obj = new Object();
+          obj.userId = user.data._id;
+          obj.status = "Processing";
+          obj.createdDate = new Date();
+          obj.productId = item.productId;
+          obj.name = item.name;
+          obj.price = discountedPrice;
+          obj.priceUnit = item.priceUnit;
+          obj.selectedQuantity = item.selectedQuantity;
+          obj.addressId = address._id;
+          obj.address1 = address.address1;
+          obj.address2 = address.address2;
+          obj.pinCode = address.pinCode;
+          obj.phone = address.phone;
+          obj.paymentMode = paymentMode.paymentMode;
+          newList.push(obj);
+        }
+      });
+    console.log("New List", newList);
     await NormalOrder.insertMany(newList);
+    const subscriptionList = new Array();
+    products
+      .filter((item) => item.subscription == 1)
+      .forEach((item) => {
+        const dis = (item.price / 100) * (item.discount ? item.discount : 0);
+        const discountedPrice = item.price - dis;
+        if (item.subscription == 1) {
+          const obj = new Object();
+          obj.userId = user.data._id;
+          obj.status = "Processing";
+          obj.createdDate = new Date();
+          obj.productId = item.productId;
+          obj.name = item.name;
+          obj.price = discountedPrice;
+          obj.priceUnit = item.priceUnit;
+          obj.selectedQuantity = item.selectedQuantity;
+          obj.addressId = address._id;
+          obj.address1 = address.address1;
+          obj.address2 = address.address2;
+          obj.pinCode = address.pinCode;
+          obj.phone = address.phone;
+          obj.paymentMode = paymentMode.paymentMode;
+          obj.days = ["Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat"];
+          obj.duration = 30;
+          subscriptionList.push(obj);
+        }
+      });
+    console.log(subscriptionList);
+    await Subscriptions.insertMany(subscriptionList);
     await Cart.deleteMany({ userId: user.data._id });
     res.json(newList);
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Something Went Wrong" });
+  }
+});
+
+router.post("/subscription/get", async (req, res) => {
+  const { id, token } = req.body;
+  const user = await tokenVerify(token);
+  try {
+    if (user.data._id) {
+      const result = await Subscriptions.find({});
+      console.log(result);
+      console.log(user.data._id);
+      res.status(200).json(result);
+    } else {
+      res.status(401).json({ message: "Unauthorised User" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Something Went Wrong" });
+  }
+});
+
+router.post("/subscription/edit/days", async (req, res) => {
+  const { days, token, id } = req.body;
+  const user = await tokenVerify(token);
+  try {
+    if (user.data._id) {
+      await Subscriptions.findByIdAndUpdate({ _id: id }, { days: days });
+      res.status(200).json({ message: "Days Updated" });
+    } else {
+      res.status(401).json({ message: "Unauthorised User" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Something Went Wrong" });
+  }
+});
+
+router.post("/subscription/edit/time-range", async (req, res) => {
+  const { deliveryTimeRange, token, id } = req.body;
+  const user = await tokenVerify(token);
+  try {
+    if (user.data._id) {
+      await Subscriptions.findByIdAndUpdate(
+        { _id: id },
+        { deliveryTimeRange: deliveryTimeRange }
+      );
+      res.status(200).json({ message: "Days Updated" });
+    } else {
+      res.status(401).json({ message: "Unauthorised User" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Something Went Wrong" });
+  }
+});
+const CancelledDeliveries = require("../schema/cacelledSubscriptions");
+router.post("/subscription/cancel/date", async (req, res) => {
+  const { date, comment, token, subscriptionId } = req.body;
+  const user = await tokenVerify(token);
+  try {
+    if (user.data._id) {
+      await CancelledDeliveries.create({
+        date: date,
+        comment: comment,
+        subscriptionId: subscriptionId,
+      });
+      console.log("Date Cancelled");
+
+      res.status(200).json({ message: "Date Cancelled" });
+    } else {
+      res.status(401).json({ message: "Unauthorised User" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Something Went Wrong" });
+  }
+});
+
+router.post("/subscription/cancel/date/get", async (req, res) => {
+  const { token, subscriptionId } = req.body;
+  const user = await tokenVerify(token);
+  try {
+    if (user.data._id) {
+      const result = await CancelledDeliveries.find({
+        subscriptionId: subscriptionId,
+      });
+      res.status(200).json(result);
+    } else {
+      res.status(401).json({ message: "Unauthorised User" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Something Went Wrong" });
+  }
+});
+
+const ExtraQuantity = require("../schema/extraQuantitySubscription");
+router.post("/subscription/extra/get", async (req, res) => {
+  const { token, subscriptionId } = req.body;
+  const user = await tokenVerify(token);
+  try {
+    if (user.data._id) {
+      const result = await ExtraQuantity.find({
+        subscriptionId: subscriptionId,
+      });
+      res.status(200).json(result);
+    } else {
+      res.status(401).json({ message: "Unauthorised User" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Something Went Wrong" });
+  }
+});
+
+router.post("/subscription/extra/create", async (req, res) => {
+  const { token, subscriptionId, date, quantity } = req.body;
+  const user = await tokenVerify(token);
+  try {
+    if (user.data._id) {
+      const result = await ExtraQuantity.create({
+        subscriptionId: subscriptionId,
+        date: date,
+        quantity: quantity,
+      });
+      console.log("Extra Quantity Added");
+      res.status(200).json(result);
+    } else {
+      res.status(401).json({ message: "Unauthorised User" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Something Went Wrong" });
+  }
+});
+
+const Deliveries = require("../schema/deliverySubscription");
+router.post("/subscription/delivery/get", async (req, res) => {
+  const { token, subscriptionId } = req.body;
+  const user = await tokenVerify(token);
+  try {
+    if (user.data._id) {
+      const result = await Deliveries.find({ subscriptionId: subscriptionId });
+      res.status(200).json(result);
+    } else {
+      res.status(401).json({ message: "Unauthorised User" });
+    }
+  } catch (error) {
     res.status(500).json({ message: "Something Went Wrong" });
   }
 });
@@ -188,7 +374,7 @@ router.post("/get", async (req, res) => {
     const { data } = await tokenVerify(token);
     if (data._id) {
       const result = await NormalOrder.find({ userId: data._id });
-      console.log("Order", result, data)
+      console.log("Order", result, data);
       res.json(result);
     } else {
       res.json({ message: "Uauthorised user" });
