@@ -29,6 +29,7 @@ router.post("/cart/get", async (req, res) => {
       const result = await Cart.find({
         userId: user.data._id,
       });
+      console.log(result)
       const productIds = new Array();
       result.forEach((item) => {
         productIds.push(mongoose.Types.ObjectId(item.productId));
@@ -187,6 +188,7 @@ router.post("/get", async (req, res) => {
     const { data } = await tokenVerify(token);
     if (data._id) {
       const result = await NormalOrder.find({ userId: data._id });
+      console.log("Order", result, data)
       res.json(result);
     } else {
       res.json({ message: "Uauthorised user" });

@@ -94,11 +94,18 @@ router.post("/", async function (req, res, next) {
 
 router.post("/auth/login", async (req, res) => {
   try {
-    const { email, phone, password } = req.body;
-
+    const { username, password } = req.body;
+    console.log(username, password)
+    console.log(req.body)
     let check;
-    if (email) check = { email: email };
-    if (phone) check = { phone: phone };
+    const emailCheck = username.split('@')
+    console.log("SPlit Check", emailCheck)
+    if (emailCheck.length === 2){
+      check = { email: username };
+    } 
+    else{
+      check = { phone: username };
+    } 
     const findUser = await User.findOne({ ...check });
     if (findUser) {
       try{
