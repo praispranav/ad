@@ -184,7 +184,7 @@ router.post("/auth/otpverify", async (req, res) => {
   const { otp, email, phone: originalPhone } = req.body;
   let check;
   if (email) check = { email: email };
-  if (originalPhone) phone = { phone: originalPhone };
+  if (originalPhone) check = { phone: originalPhone };
 
   const findUser = await User.findOne({ ...check });
   console.log(findUser)
