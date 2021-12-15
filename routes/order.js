@@ -229,27 +229,32 @@ router.post("/subscription/get", async (req, res) => {
 });
 
 router.post("/subscription/edit/days", async (req, res) => {
-  const { days, token, id } = req.body;
+  const { days, token, subscriptionId } = req.body;
   const user = await tokenVerify(token);
   try {
     if (user.data._id) {
-      await Subscriptions.findByIdAndUpdate({ _id: id }, { days: days });
+     const result = await Subscriptions.findByIdAndUpdate(
+        { _id: subscriptionId },
+        { days: days }
+      );
+      console.log(result)
       res.status(200).json({ message: "Days Updated" });
     } else {
       res.status(401).json({ message: "Unauthorised User" });
     }
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Something Went Wrong" });
   }
 });
 
 router.post("/subscription/edit/time-range", async (req, res) => {
-  const { deliveryTimeRange, token, id } = req.body;
+  const { deliveryTimeRange, token, subscriptionId } = req.body;
   const user = await tokenVerify(token);
   try {
     if (user.data._id) {
       await Subscriptions.findByIdAndUpdate(
-        { _id: id },
+        { _id: subscriptionId },
         { deliveryTimeRange: deliveryTimeRange }
       );
       res.status(200).json({ message: "Days Updated" });
