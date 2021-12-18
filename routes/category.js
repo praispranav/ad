@@ -3,6 +3,7 @@ var router = express.Router();
 const Products = require("../schema/categories");
 const Image = require("../schema/imageStore");
 var mongoose = require("mongoose");
+const { response } = require("express");
 
 let flowers = [];
 let tifin = [];
@@ -19,6 +20,18 @@ router.get("/flowers", function (req, res, next) {
 
 router.get("/vegetables", function (req, res, next) {
   res.json(vegetables);
+});
+
+router.get("/product/:id", async function (req, res, next) {
+  try{
+    const id = req.params.id
+    console.log(id)
+    const products = await Products.find({ _id:id });
+    res.status(200).json(products)
+  } catch (error){
+    console.log(error)
+    res.status(500).json({ message: "Something Went Wrong"})
+  }
 });
 
 router.get("/fruits", function (req, res, next) {

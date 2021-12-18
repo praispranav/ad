@@ -8,6 +8,17 @@ const auth = (token, next) => {
   else console.log("Unauthorised");
 };
 
+router.post('/login', async (req,res, next)=>{
+  const { username, password } = req.body
+  try{
+    if(username === 'hris-admin' && password === 'Admin@123') res.status(200).json({ message:"Login Success", token: "jasjkiwe47541weqe12wewq8ew51qe8qw7e"})
+    else throw new Error("Invalid User")
+  } catch(error){
+    console.log(error)
+    res.status(401).json({ message: "Invalid User"})
+  }
+})
+
 const uploadImage = async (_id, imageString, category) => {
   try {
     const data = {
