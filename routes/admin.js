@@ -2,22 +2,31 @@ var express = require("express");
 var router = express.Router();
 const Products = require("../schema/categories");
 const Image = require("../schema/imageStore");
+const NormalOrder = require("../schema/normalOrders");
+const Users = require("../schema/user");
+const Address = require("../schema/address");
 
 const auth = (token, next) => {
   if (token === "jasjkiwe47541weqe12wewq8ew51qe8qw7e") return true;
   else console.log("Unauthorised");
 };
 
-router.post('/login', async (req,res, next)=>{
-  const { username, password } = req.body
-  try{
-    if(username === 'hris-admin' && password === 'Admin@123') res.status(200).json({ message:"Login Success", token: "jasjkiwe47541weqe12wewq8ew51qe8qw7e"})
-    else throw new Error("Invalid User")
-  } catch(error){
-    console.log(error)
-    res.status(401).json({ message: "Invalid User"})
+router.post("/login", async (req, res, next) => {
+  const { username, password } = req.body;
+  try {
+    if (username === "hris-admin" && password === "Admin@123")
+      res
+        .status(200)
+        .json({
+          message: "Login Success",
+          token: "jasjkiwe47541weqe12wewq8ew51qe8qw7e",
+        });
+    else throw new Error("Invalid User");
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({ message: "Invalid User" });
   }
-})
+});
 
 const uploadImage = async (_id, imageString, category) => {
   try {
@@ -155,6 +164,72 @@ router.post("/products/discount/:id", async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ data: [] });
+  }
+});
+
+router.post("/order/normal", async (req, res) => {
+  try {
+    const token = req.body.token;
+    if (auth(token)) {
+      const results = await NormalOrder.find();
+      res.status(200).json(results);
+    } else {
+      res.status(401).json({ message: "Invalid User" });
+    }
+  } catch (error) {}
+});
+
+router.post("/user", async (req, res) => {
+  try {
+    const token = req.body.token;
+    if (auth(token)) {
+      const results = await Users.find();
+      res.status(200).json(results);
+    } else {
+      res.status(401).json({ message: "Invalid User" });
+    }
+  } catch {
+    res.json({ message: "Some thing Went Wrong" });
+  }
+});
+
+router.post("/address", async (req, res) => {
+  try {
+    const token = req.body.token;
+    if (auth(token)) {
+      const results = await Address.find();
+      res.status(200).json(results);
+    } else {
+      res.status(401).json({ message: "Invalid User" });
+    }
+  } catch {
+    res.json({ message: "Some thing Went Wrong" });
+  }
+});
+
+router.post("/order/status", async (req, res) => {
+  try {
+    const token = req.body.token;
+    const id = req.body.id;
+    const status = req.body.status;
+    if (auth(token)) {
+      if (
+        status.toLowerCase() === "delivered" ||
+        status.toLowerCase() === "closed"
+      ) {
+        await NormalOrder.findOneAndUpdate(
+          { _id: id },
+          { status: status, deliveryDate: new Date() }
+        );
+      } else {
+        await NormalOrder.findOneAndUpdate({ _id: id }, { status: status });
+      }
+      res.status(200).json({ message: "Order Updated" });
+    } else {
+      res.status(401).json({ message: "Invalid User" });
+    }
+  } catch {
+    res.json({ message: "Some thing Went Wrong" });
   }
 });
 

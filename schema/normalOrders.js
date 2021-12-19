@@ -16,6 +16,7 @@ const Orders = new mongoose.Schema(
     pinCode: { type: String, required: true },
     phone: { type: String, required: true },
     paymentMode: { type: Object, required: true },
+    deliveryDate:{ type:String, required: false}
   },
   { collection: "normal-order" }
 );
