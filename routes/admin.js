@@ -5,6 +5,10 @@ const Image = require("../schema/imageStore");
 const NormalOrder = require("../schema/normalOrders");
 const Users = require("../schema/user");
 const Address = require("../schema/address");
+const Subscription = require("../schema/subscriptions");
+const Deliveries = require("../schema/deliverySubscription");
+const ExtendRequest = require("../schema/extraQuantitySubscription");
+const CancelledRequest = require("../schema/cacelledSubscriptions");
 
 const auth = (token, next) => {
   if (token === "jasjkiwe47541weqe12wewq8ew51qe8qw7e") return true;
@@ -15,12 +19,10 @@ router.post("/login", async (req, res, next) => {
   const { username, password } = req.body;
   try {
     if (username === "hris-admin" && password === "Admin@123")
-      res
-        .status(200)
-        .json({
-          message: "Login Success",
-          token: "jasjkiwe47541weqe12wewq8ew51qe8qw7e",
-        });
+      res.status(200).json({
+        message: "Login Success",
+        token: "jasjkiwe47541weqe12wewq8ew51qe8qw7e",
+      });
     else throw new Error("Invalid User");
   } catch (error) {
     console.log(error);
@@ -172,6 +174,87 @@ router.post("/order/normal", async (req, res) => {
     const token = req.body.token;
     if (auth(token)) {
       const results = await NormalOrder.find();
+      res.status(200).json(results);
+    } else {
+      res.status(401).json({ message: "Invalid User" });
+    }
+  } catch (error) {}
+});
+
+router.post("/order/subscription", async (req, res) => {
+  try {
+    const token = req.body.token;
+    if (auth(token)) {
+      const results = await Subscription.find();
+      res.status(200).json(results);
+    } else {
+      res.status(401).json({ message: "Invalid User" });
+    }
+  } catch (error) {}
+});
+
+router.post("/order/subscription/status", async (req, res) => {
+  try {
+    const token = req.body.token;
+    if (auth(token)) {
+      const { status, id } = req.body;
+      await Subscription.findOneAndUpdate({ _id: id }, { status: status });
+      res.status(200).json({ message: "Status Updated" });
+    } else {
+      res.status(401).json({ message: "Invalid User" });
+    }
+  } catch (error) {}
+});
+
+router.post("/order/subscription/deliveries", async (req, res) => {
+  try {
+    const token = req.body.token;
+    if (auth(token)) {
+      const results = await Deliveries.find();
+      res.status(200).json(results);
+    } else {
+      res.status(401).json({ message: "Invalid User" });
+    }
+  } catch (error) {}
+});
+
+router.post("/order/subscription/deliveries/save", async (req, res) => {
+  try {
+    const token = req.body.token;
+    if (auth(token)) {
+      const { status, comment, deliveryDate, quantity, subscriptionId } = req.body;
+      await Deliveries.create({ status, comment, deliveryDate, quantity, subscriptionId });
+      res.status(200).json({ message: "Deliveries Created" });
+    } else {
+      res.status(401).json({ message: "Invalid User" });
+    }
+  } catch (error) {
+    res.json({message: "SOmething Went Wrong"})
+  }
+});
+
+router.post(
+  "/order/subscription/extended-delivery-request",
+  async (req, res) => {
+    try {
+      const token = req.body.token;
+      if (auth(token)) {
+        const { status, id } = req.body;
+        const results = await ExtendRequest.find();
+        res.status(200).json(results);
+      } else {
+        res.status(401).json({ message: "Invalid User" });
+      }
+    } catch (error) {}
+  }
+);
+
+router.post("/order/subscription/cancel-request", async (req, res) => {
+  try {
+    const token = req.body.token;
+    if (auth(token)) {
+      const { status, id } = req.body;
+      const results = await CancelledRequest.find();
       res.status(200).json(results);
     } else {
       res.status(401).json({ message: "Invalid User" });

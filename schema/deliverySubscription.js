@@ -6,6 +6,7 @@ const ExtraQuanities = mongoose.Schema(
     status: { type: String, required: true },
     deliveryDate: { type: Date, required: true },
     quantity: { type: Number, required: true },
+    subscriptionId:{type:String, required: true}
   },
   { collection: "deliveries" }
 );

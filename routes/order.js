@@ -275,6 +275,7 @@ router.post("/subscription/cancel/date", async (req, res) => {
         date: date,
         comment: comment,
         subscriptionId: subscriptionId,
+        approved: false
       });
       console.log("Date Cancelled");
 
@@ -331,6 +332,7 @@ router.post("/subscription/extra/create", async (req, res) => {
         subscriptionId: subscriptionId,
         date: date,
         quantity: quantity,
+        approved: false
       });
       console.log("Extra Quantity Added");
       res.status(200).json(result);
