@@ -14,6 +14,6 @@ RUN npm install --silent
 
 # Bundle app source
 COPY . .
-
-EXPOSE 80
+ENV PORT=3000
+EXPOSE 3000
 CMD [ "node", "./bin/www" ]
