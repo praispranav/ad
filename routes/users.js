@@ -122,7 +122,7 @@ router.post("/auth/login", async (req, res) => {
                 token: token,
               });
             } else {
-              res.status(200).json({ message: "Login Failed" });
+              res.status(200).json({ message: "Email or Password is Wrong." });
             }
           } catch (error) {
             res.status(401).json({ message: "Email Or Password Wrong." });
@@ -160,8 +160,8 @@ router.post("/auth/register", async (req, res) => {
         bcrypt.hash(password, salt, async function (err, hash) {
           try {
             await User.create({
-              name: name,
-              email: email,
+              name: name.toLowerCase(),
+              email: email.toLowerCase(),
               phone: phone,
               password: hash,
             });
@@ -189,11 +189,8 @@ router.post("/auth/register", async (req, res) => {
 
 router.post("/auth/otpverify", async (req, res) => {
   const { otp, email, phone: originalPhone } = req.body;
-  let check;
-  if (email) check = { email: email };
-  if (originalPhone) check = { phone: originalPhone };
-
-  const findUser = await User.findOne({ ...check });
+ console.log('Email To Verify', email)
+  const findUser = await User.findOne({ email:email });
   console.log(findUser);
 
   try {
@@ -224,12 +221,10 @@ router.post("/auth/otpverify", async (req, res) => {
 });
 
 router.post("/auth/reqforotp", async (req, res) => {
-  const { email, phone:originalPhone } = req.body;
-  let check;
-  if (email) check = { email: email };
-  if (originalPhone) phone = { phone: originalPhone };
+  const { email } = req.body;
 
-  const findUser = await User.findOne({ ...check });
+
+  const findUser = await User.findOne({ email: email });
   const randomNumber = await Math.floor(Math.random() * 100000);
   try {
     if (findUser) {
@@ -238,6 +233,7 @@ router.post("/auth/reqforotp", async (req, res) => {
         { _id: findUser._id },
         { forgetPasswordOtp: randomNumber, forgetPasswordTime: new Date() }
       );
+      console.log("Random Number Send", randomNumber)
       await sendMail({ otp: randomNumber, email: findUser.email });
       res.json({ message: "Otp has Been Sent To Your Mail" });
     } else {
