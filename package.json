@@ -1,6 +1,6 @@
 {
-  "name": "nodejs-get-started",
-  "version": "0.0.0",
+  "name": "hris-bacnd-api",
+  "version": "0.0.1",
   "private": true,
   "engines": {
     "npm": ">=6.0.0",

@@ -5,22 +5,22 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var category = require('./routes/category')
-var cors =  require('cors')
+var cors = require('cors')
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var admin = require('./routes/admin')
-const order= require('./routes/order')
+const order = require('./routes/order')
 
-const mongoose =  require('mongoose')
+const mongoose = require('mongoose')
 
 var app = express();
 
 var url =
   "mongodb+srv://pranavkumarshop:pranavkumar@cluster0.rk2ol.mongodb.net/hris-service?retryWrites=true&w=majority";
 
-mongoose.connect(url,{useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
 const con = mongoose.connection
-con.on('open',()=>{
+con.on('open', () => {
   console.log('Server COnnected')
 })
 
@@ -32,7 +32,7 @@ app.set('view engine', 'jade');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 var corsOptions = {
-  origin:'*',
+  origin: '*',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
@@ -40,8 +40,8 @@ var corsOptions = {
 // app.use(express.limit('2mb'));
 
 app.use(logger('dev'));
-app.use(bodyParser.json({limit:"5mb"}));
-app.use(bodyParser.urlencoded({ limit: '5mb',extended: true }));
+app.use(bodyParser.json({ limit: "5mb" }));
+app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
 app.use(cookieParser());
 // app.use(cors())
 // app.options('*', cors(corsOptions));
@@ -52,14 +52,39 @@ app.use(function (req, res, next) {
   next();
 });
 
+// let logginApi = []
+
+// let demoLogger = (req, res, next) => {
+//   if(req.url !== "/logger"){
+//     logginApi.push({
+//       req: {
+//         url: req.url, method: req.method, query: req.query, params: req.params,
+//         startTime: req._startTime,
+//       }
+//     })
+//   }
+//   console.log(res)
+//   next();
+// };
+
+// app.get('/logger', (req, res, next)=>{
+//   res.status(200).json(logginApi)
+//   if(logginApi.length === 100) {
+//     logginApi = []
+//   }
+//   next()
+// })
+
+// app.use(demoLogger);
+
 app.use('/', routes);
 app.use('/category', category);
 app.use('/user', users);
 app.use('/admin', admin);
-app.use('/order',order)
+app.use('/order', order)
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
@@ -70,7 +95,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
+  app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
@@ -81,7 +106,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,

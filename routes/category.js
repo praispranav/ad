@@ -11,6 +11,7 @@ let newsPaper = [];
 let fruits = [];
 let vegetables = [];
 let dairy = [];
+let stationary = [];
 
 let a = 0;
 
@@ -49,6 +50,11 @@ router.get("/newspaper", function (req, res, next) {
 router.get("/dairy", function (req, res, next) {
   res.json(dairy);
 });
+
+router.get("/stationary", function (req, res, next) {
+  res.json(stationary);
+});
+
 router.get("/time-range", function (req, res, next) {
   const timeRange = [
     "8pm - 9pm",
@@ -95,6 +101,7 @@ router.get("/update", async function (req, res, next) {
     vegetables = products.filter((item) => item.category == "vegetables");
     tifin = products.filter((item) => item.category == "tifin");
     dairy = products.filter((item) => item.category == "dairy");
+    stationary = products.filter((item)=> item.category === 'stationary')
     res.json({ status: "ok", msg: "Cached Updated" });
   } catch (error) {
     res.json({ status: 400, msg: "Something Went Wrong" });
