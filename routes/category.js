@@ -3,7 +3,6 @@ var router = express.Router();
 const Products = require("../schema/categories");
 const Image = require("../schema/imageStore");
 var mongoose = require("mongoose");
-const { response } = require("express");
 
 let flowers = [];
 let tifin = [];
@@ -12,6 +11,7 @@ let fruits = [];
 let vegetables = [];
 let dairy = [];
 let stationary = [];
+let grocery = [];
 
 let a = 0;
 
@@ -55,6 +55,10 @@ router.get("/stationary", function (req, res, next) {
   res.json(stationary);
 });
 
+router.get("/grocery", function (req, res, next) {
+  res.json(grocery);
+});
+
 router.get("/time-range", function (req, res, next) {
   const timeRange = [
     "8pm - 9pm",
@@ -92,6 +96,17 @@ router.get("/image/id/:id", async (req, res) => {
   }
 });
 
+const sliderImages = [
+  "https://source.unsplash.com/1024x768/?nature",
+  "https://source.unsplash.com/1024x768/?water",
+  "https://source.unsplash.com/1024x768/?girl",
+  "https://source.unsplash.com/1024x768/?tree", // Network image
+]
+
+router.get('/slider/image',async (req, res)=>{
+  res.json(sliderImages)
+})
+
 router.get("/update", async function (req, res, next) {
   try {
     const products = await Products.find();
@@ -102,6 +117,7 @@ router.get("/update", async function (req, res, next) {
     tifin = products.filter((item) => item.category == "tifin");
     dairy = products.filter((item) => item.category == "dairy");
     stationary = products.filter((item)=> item.category === 'stationary')
+    grocery = products.filter((item)=> item.category === 'grocery')
     res.json({ status: "ok", msg: "Cached Updated" });
   } catch (error) {
     res.json({ status: 400, msg: "Something Went Wrong" });
