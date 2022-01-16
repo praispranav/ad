@@ -52,6 +52,14 @@ app.use(function (req, res, next) {
   next();
 });
 
+app.use((req, res, next) => {
+  if (req.originalUrl === "/webhook") {
+    next();
+  } else {
+    bodyParser.json()(req, res, next);
+  }
+});
+
 // let logginApi = []
 
 // let demoLogger = (req, res, next) => {
@@ -81,7 +89,8 @@ app.use('/', routes);
 app.use('/category', category);
 app.use('/user', users);
 app.use('/admin', admin);
-app.use('/order', order)
+app.use('/order', order);
+app.use('/payment', require('./routes/payment'))
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

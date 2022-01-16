@@ -159,12 +159,22 @@ router.post("/auth/register", async (req, res) => {
       bcrypt.genSalt(saltRounds, function (err, salt) {
         bcrypt.hash(password, salt, async function (err, hash) {
           try {
+            const customer = await stripe.customers.create({
+              description: 'My First Test Customer (created for API docs)',
+              name: name.toLowerCase(),
+              email: email.toLowerCase(),
+              phone: phone,
+              
+            });
+            console.log(customer);
             await User.create({
               name: name.toLowerCase(),
               email: email.toLowerCase(),
               phone: phone,
               password: hash,
+              customerId: customer.id
             });
+            const stripe = require('stripe')('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
             res.json({
               message:
                 "Signup Success. Please Login and Verify Your Account. Thanks For Joining us.",
