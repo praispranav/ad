@@ -10,7 +10,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var admin = require('./routes/admin')
 const order = require('./routes/order')
-
+const adminProductV2 = require('./routes/adminv2')
 const mongoose = require('mongoose')
 
 var app = express();
@@ -91,6 +91,8 @@ app.use('/user', users);
 app.use('/admin', admin);
 app.use('/order', order);
 app.use('/payment', require('./routes/payment'))
+
+app.use('/v2', adminProductV2)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

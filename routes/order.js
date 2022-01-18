@@ -168,7 +168,7 @@ router.post("/add", async (req, res) => {
           obj.address2 = address.address2;
           obj.pinCode = address.pinCode;
           obj.phone = address.phone;
-          obj.paymentMode = paymentMode.paymentMode;
+          obj.paymentMode = paymentMode;
           newList.push(obj);
         }
       });
@@ -195,7 +195,7 @@ router.post("/add", async (req, res) => {
           obj.address2 = address.address2;
           obj.pinCode = address.pinCode;
           obj.phone = address.phone;
-          obj.paymentMode = paymentMode.paymentMode;
+          obj.paymentMode = paymentMode;
           obj.days = ["Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat"];
           obj.duration = 30;
           subscriptionList.push(obj);

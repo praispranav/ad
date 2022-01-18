@@ -11,7 +11,11 @@ const config = require("../config/keys");
 
 const bcrypt = require("bcrypt");
 const saltRounds = config.saltRounds;
+
 const privateKey = config.privateKey;
+
+const stripeSecretKey =
+  "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";
 
 const generateToken = (data) => {
   return new Promise(async (resolve, rejects) => {
@@ -159,6 +163,11 @@ router.post("/auth/register", async (req, res) => {
       bcrypt.genSalt(saltRounds, function (err, salt) {
         bcrypt.hash(password, salt, async function (err, hash) {
           try {
+            const Stripe = require('stripe')
+            const stripe = new Stripe(stripeSecretKey, {
+              apiVersion: "2020-08-27",
+              typescript: true,
+            });
             const customer = await stripe.customers.create({
               description: 'My First Test Customer (created for API docs)',
               name: name.toLowerCase(),
@@ -174,13 +183,13 @@ router.post("/auth/register", async (req, res) => {
               password: hash,
               customerId: customer.id
             });
-            const stripe = require('stripe')('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
             res.json({
               message:
                 "Signup Success. Please Login and Verify Your Account. Thanks For Joining us.",
             });
           } catch (err) {
-            res.json({ message: "Something Went Wrong." });
+            console.log(err)
+            res.status(400).json({ message: "Something Went Wrong." });
           }
         });
       });

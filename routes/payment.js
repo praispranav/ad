@@ -101,9 +101,9 @@ const cart = async (token) => {
 };
 
 const stripePublishableKey =
-  "pk_test_51JNw4SSG7fBqR4Ou7Smol8pSTavdAKpz4QpYC9Q2K3uWmQLdTNhD6YmZOF81IYZuYMYaAHHwwEC6QbxwRQTWFzI800BJChd9ny";
+  "pk_live_51JNw4SSG7fBqR4Ou0AWmgmIQXsJUjhKf5ZUBus2l1xikBgy8JTLVap6X9fiop9N0AbSK3zBtz7n2IIlbi86QeUJh003EpWGtMl";
 const stripeSecretKey =
-  "sk_test_51JNw4SSG7fBqR4OuH9iixBz6foy3MqDD3scaaoT5mXIZXlrkYk5clSe46iZUtMyJhih32icB7WTzpBgWUUG1ZntG00IR3TjNny";
+  "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";
 const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
 app.get("/", (req, res) => {
   res.send({ "Welome to": "Expo's Stripe example server!" });
