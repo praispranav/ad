@@ -3,6 +3,7 @@ var router = express.Router();
 const Products = require("../schema/categories");
 const Image = require("../schema/imageStore");
 var mongoose = require("mongoose");
+const CarauselImage = require("../schema/sliderImages");
 
 let flowers = [];
 let tifin = [];
@@ -15,47 +16,70 @@ let grocery = [];
 
 let a = 0;
 
-router.get("/flowers", function (req, res, next) {
+const fetchPro = () => {
+  return new Promise(async (resolve, rejects) => {
+    const products = await Products.find();
+    flowers = products.filter((item) => item.category == "flowers");
+    newsPaper = products.filter((item) => item.category == "newspaper");
+    fruits = products.filter((item) => item.category == "fruits");
+    vegetables = products.filter((item) => item.category == "vegetables");
+    tifin = products.filter((item) => item.category == "tifin");
+    dairy = products.filter((item) => item.category == "dairy");
+    stationary = products.filter((item) => item.category === "stationary");
+    grocery = products.filter((item) => item.category === "grocery");
+    resolve()
+  });
+};
+
+router.get("/flowers", async function (req, res, next) {
+  if(flowers.length === 0) await fetchPro();
   res.json(flowers);
 });
 
-router.get("/vegetables", function (req, res, next) {
+router.get("/vegetables", async function (req, res, next) {
+  if(vegetables.length === 0) await fetchPro();
   res.json(vegetables);
 });
 
 router.get("/product/:id", async function (req, res, next) {
-  try{
-    const id = req.params.id
-    console.log(id)
-    const products = await Products.find({ _id:id });
-    res.status(200).json(products)
-  } catch (error){
-    console.log(error)
-    res.status(500).json({ message: "Something Went Wrong"})
+  try {
+    const id = req.params.id;
+    console.log(id);
+    const products = await Products.find({ _id: id });
+    res.status(200).json(products);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Something Went Wrong" });
   }
 });
 
-router.get("/fruits", function (req, res, next) {
+router.get("/fruits", async function (req, res, next) {
+  if(fruits.length === 0) await fetchPro();
   res.json(fruits);
 });
 
-router.get("/tifin", function (req, res, next) {
+router.get("/tifin", async  function (req, res, next) {
+  if(tifin.length === 0) await fetchPro();
   res.json(tifin);
 });
 
-router.get("/newspaper", function (req, res, next) {
+router.get("/newspaper", async  function (req, res, next) {
+  if(newsPaper.length === 0) await fetchPro();
   res.json(newsPaper);
 });
 
-router.get("/dairy", function (req, res, next) {
+router.get("/dairy", async  function (req, res, next) {
+  if(dairy.length === 0) await fetchPro();
   res.json(dairy);
 });
 
-router.get("/stationary", function (req, res, next) {
+router.get("/stationary", async  function (req, res, next) {
+  if(stationary.length) await fetchPro();
   res.json(stationary);
 });
 
-router.get("/grocery", function (req, res, next) {
+router.get("/grocery", async function (req, res, next) {
+  if(grocery.length) await fetchPro();
   res.json(grocery);
 });
 
@@ -69,7 +93,7 @@ router.get("/time-range", function (req, res, next) {
     "7am - 8am",
     "8am - 9am",
   ];
-  res.json(timeRange)
+  res.json(timeRange);
 });
 
 router.get("/image/:category", async (req, res) => {
@@ -101,27 +125,18 @@ const sliderImages = [
   "https://source.unsplash.com/1024x768/?water",
   "https://source.unsplash.com/1024x768/?girl",
   "https://source.unsplash.com/1024x768/?tree", // Network image
-]
+];
 
-router.get('/slider/image',async (req, res)=>{
-  res.json(sliderImages)
-})
+router.get("/slider/image", async (req, res) => {
+  const result = await CarauselImage.find();
+  const newArray = new Array();
+  result.forEach((item) => newArray.push(item.img));
+  res.json(newArray);
+});
 
 router.get("/update", async function (req, res, next) {
-  try {
-    const products = await Products.find();
-    flowers = products.filter((item) => item.category == "flowers");
-    newsPaper = products.filter((item) => item.category == "newspaper");
-    fruits = products.filter((item) => item.category == "fruits");
-    vegetables = products.filter((item) => item.category == "vegetables");
-    tifin = products.filter((item) => item.category == "tifin");
-    dairy = products.filter((item) => item.category == "dairy");
-    stationary = products.filter((item)=> item.category === 'stationary')
-    grocery = products.filter((item)=> item.category === 'grocery')
-    res.json({ status: "ok", msg: "Cached Updated" });
-  } catch (error) {
-    res.json({ status: 400, msg: "Something Went Wrong" });
-  }
+  await fetchPro();
+  res.json({ status: "ok", msg: "Cached Updated" });
 });
 
 module.exports = router;

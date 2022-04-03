@@ -9,6 +9,7 @@ const Subscription = require("../schema/subscriptions");
 const Deliveries = require("../schema/deliverySubscription");
 const ExtendRequest = require("../schema/extraQuantitySubscription");
 const CancelledRequest = require("../schema/cacelledSubscriptions");
+const CarauselImage = require("../schema/sliderImages");
 
 const auth = (token, next) => {
   if (token === "jasjkiwe47541weqe12wewq8ew51qe8qw7e") return true;
@@ -222,14 +223,21 @@ router.post("/order/subscription/deliveries/save", async (req, res) => {
   try {
     const token = req.body.token;
     if (auth(token)) {
-      const { status, comment, deliveryDate, quantity, subscriptionId } = req.body;
-      await Deliveries.create({ status, comment, deliveryDate, quantity, subscriptionId });
+      const { status, comment, deliveryDate, quantity, subscriptionId } =
+        req.body;
+      await Deliveries.create({
+        status,
+        comment,
+        deliveryDate,
+        quantity,
+        subscriptionId,
+      });
       res.status(200).json({ message: "Deliveries Created" });
     } else {
       res.status(401).json({ message: "Invalid User" });
     }
   } catch (error) {
-    res.json({message: "SOmething Went Wrong"})
+    res.json({ message: "SOmething Went Wrong" });
   }
 });
 
@@ -289,6 +297,56 @@ router.post("/address", async (req, res) => {
     res.json({ message: "Some thing Went Wrong" });
   }
 });
+
+router.post("/carusel/image/delete", async (req, res) => {
+  try {
+    const body = req.body;
+    const token = req.body.token;
+
+    if (auth(token)) {
+      await CarauselImage.deleteOne({_id: body.id });
+      res.status(200).json({ status: true });
+    } else {
+      res.status(401).json({ status: false });
+    }
+  } catch (error) {
+    res.status(500).json({ status: false });
+  }
+});
+
+router.post("/carusel/image/get", async (req, res) => {
+  try {
+    const body = req.body;
+    const token = req.body.token;
+
+    if (auth(token)) {
+      const r = await CarauselImage.find();
+      res.status(200).json(r);
+    } else {
+      res.status(401).json({ status: false });
+    }
+  } catch (error) {
+    res.status(500).json({ status: false });
+  }
+});
+
+router.post("/carusel/image", async (req, res) => {
+  try {
+    const body = req.body;
+    const token = req.body.token;
+
+    if (auth(token)) {
+      const newImage = new CarauselImage({ img: body.img });
+      await newImage.save();
+      res.status(200).json({ status: true });
+    } else {
+      res.status(401).json({ status: false });
+    }
+  } catch (error) {
+    res.status(500).json({ status: false });
+  }
+});
+
 
 router.post("/order/status", async (req, res) => {
   try {

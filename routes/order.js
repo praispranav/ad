@@ -90,7 +90,7 @@ router.post("/cart/add", async (req, res) => {
         productId: productId,
         selectedQuantity: selectedQuantity,
       });
-      res.status(201).json({ message: "Item Added TO Cart" });
+      res.status(201).json({ message: "Item Added To Cart" });
     } else {
       res.status(401).json({ message: "Item Cannot be Added" });
     }
@@ -216,7 +216,7 @@ router.post("/subscription/get", async (req, res) => {
   const user = await tokenVerify(token);
   try {
     if (user.data._id) {
-      const result = await Subscriptions.find({});
+      const result = await Subscriptions.find({ userId: user.data._id });
       console.log(result);
       console.log(user.data._id);
       res.status(200).json(result);
